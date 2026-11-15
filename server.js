@@ -1,6 +1,7 @@
 var express = require("express");
-
 var cors = require("cors");
+var path = require ("path");
+
 var app = express();
 
 app.use(cors());
@@ -18,7 +19,15 @@ let lesson = [
 
 app.get("/lesson", function (request, response) {
     response.json(lesson);
-})
+});
+
+var publicPath = path.resolve(__dirname,"./img");
+//Send static files from directory to server
+app.use("/images",express.static(publicPath));
+//Handle error for static file
+app.use("/images", function(request,response) {
+    response.status(404).send("Image not found!");
+});
 
 //Handle unrecognized request
 app.use(function (request, response) {
