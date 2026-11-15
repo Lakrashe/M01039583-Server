@@ -6,7 +6,7 @@ var app = express();
 app.use(cors());
 
 app.use(function (request, response, next) {
-    console.log("In comes a request to:  " + request.url);
+    console.log("Income " + request.method + " request at " + request.url);
     next();
 });
 
