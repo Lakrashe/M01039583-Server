@@ -26,6 +26,7 @@ let orders = [];
 //Post route for orders
 app.post("/orders", function (request, response) {
     var body = request.body;
+    orders.push(body);
     const cart = request.body.cart
     console.log("Order received" + "\n Name: " + body.order.firstName + "\n Last Name: " + body.order.lastName + "\n Phone: " + body.order.phone);
     //For loop to extract the data from the cart array
@@ -34,6 +35,10 @@ app.post("/orders", function (request, response) {
     });
     response.json({message:"Order received!"});
 });
+//Get orders 
+app.get("/orders", function(request,response) {
+    response.json(orders);
+})
 
 var publicPath = path.resolve(__dirname, "./img");
 //Send static files from directory to server
