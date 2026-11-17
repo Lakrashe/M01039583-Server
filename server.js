@@ -1,7 +1,11 @@
 var express = require("express");
 var cors = require("cors");
 var path = require("path");
-
+require("dotenv").config({ path: "./config.env" });
+const { MongoClient } = require("mongodb");
+const uri = process.env.MONGODB_PREFIX + process.env.MONGODB_USERNAME + ":" + process.env.MONGODB_PASSWORD + process.env.MONGODB_URL;
+const client = new MongoClient(uri);
+const db = client.db("ExtraSchool_DB");
 
 var app = express();
 app.use(express.json());
@@ -12,14 +16,27 @@ app.use(function (request, response, next) {
     next();
 });
 
-let lesson = [
-    { id: 1, subject: "Math", location: "Hendon", price: "100", availabilty: 5, img: "images/mathimg.png" },
-    { id: 2, subject: "English", location: "Wembley", price: "150", availabilty: 5, img: "images/English.png" },
-    { id: 3, subject: "Art", location: "Camden", price: "30", availabilty: 5, img: "images/Art.png" },
-];
+//Connections to mongoDB
+async function connectToMongoDB() {
+    try {
+        await client.connect();
+        console.log("Connected to MongoDB");
+        return client;
+
+    }
+    catch (error) {
+        console.error("Error connecting to MongoDB:", error);
+        throw error;
+    }
+}
+connectToMongoDB();
 
 app.get("/lesson", function (request, response) {
-    response.json(lesson);
+    async function fetchLessons() {
+    let collection = await db.collection("lesson");
+    let lesson = await collection.find({}).toArray();
+    response.send(lesson);
+    }
 });
 
 let orders = [];
