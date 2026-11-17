@@ -31,30 +31,24 @@ async function connectToMongoDB() {
 }
 connectToMongoDB();
 
-app.get("/lesson", function (request, response) {
-    async function fetchLessons() {
+app.get("/lesson", async function (request, response) {
     let collection = await db.collection("lesson");
     let lesson = await collection.find({}).toArray();
     response.send(lesson);
-    }
 });
 
-let orders = [];
 //Post route for orders
-app.post("/orders", function (request, response) {
-    var body = request.body;
-    orders.push(body);
-    const cart = request.body.cart
-    console.log("Order received" + "\n Name: " + body.order.firstName + "\n Last Name: " + body.order.lastName + "\n Phone: " + body.order.phone);
-    //For loop to extract the data from the cart array
-    cart.forEach(function (item) {
-        console.log(" ID: " + item.id + " | Subject: " + item.subject + " | Price: " + item.price);
-    });
-    response.json({message:"Order received!"});
+app.post("/orders", async function (request, response) {
+    const { order , cart } = request.body;
+    let collection = await db.collection("orders");
+    let result = await collection.insertOne({ order, cart });
+    response.send(result);
 });
 //Get orders 
-app.get("/orders", function(request,response) {
-    response.json(orders);
+app.get("/orders", async function (request, response) {
+    let collection = await db.collection("orders");
+    let orders = await collection.find({}).toArray();
+    response.send(orders);
 })
 
 var publicPath = path.resolve(__dirname, "./img");
