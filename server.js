@@ -31,12 +31,23 @@ async function connectToMongoDB() {
 }
 connectToMongoDB();
 
+//Get route for lessons
 app.get("/lesson", async function (request, response) {
     let collection = await db.collection("lesson");
     let lesson = await collection.find({}).toArray();
     response.send(lesson);
 });
-
+//Put route for lessons
+app.put("/lesson/:_id", async function (request, response) {
+    var body = request.body;
+    let collection = await db.collection("lesson");
+    let tempid = request.params._id;
+    const query = { _id: new ObjectId(tempid) };
+    const update = { $set: request.body };
+    result = await collection.updateOne(query, update);
+    response.send(result);
+    console.log(result);
+});
 //Post route for orders
 app.post("/orders", async function (request, response) {
     const { order , cart } = request.body;
@@ -50,7 +61,6 @@ app.get("/orders", async function (request, response) {
     let orders = await collection.find({}).toArray();
     response.send(orders);
 })
-
 var publicPath = path.resolve(__dirname, "./img");
 //Send static files from directory to server
 app.use("/images", express.static(publicPath));
