@@ -2,10 +2,13 @@ var express = require("express");
 var cors = require("cors");
 var path = require("path");
 require("dotenv").config({ path: "./config.env" });
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 const uri = process.env.MONGODB_PREFIX + process.env.MONGODB_USERNAME + ":" + process.env.MONGODB_PASSWORD + process.env.MONGODB_URL;
 const client = new MongoClient(uri);
 const db = client.db("ExtraSchool_DB");
+
+//Dynamically get the port from environment variable or default to 3000
+const PORT = process.env.PORT || 3000;
 
 var app = express();
 app.use(express.json());
@@ -44,7 +47,7 @@ app.put("/lesson/:_id", async function (request, response) {
     let tempid = request.params._id;
     const query = { _id: new ObjectId(tempid) };
     const update = { $set: request.body };
-    result = await collection.updateOne(query, update);
+    const result = await collection.updateOne(query, update);
     response.send(result);
     console.log(result);
 });
@@ -74,7 +77,7 @@ app.use(function (request, response) {
     response.status(404).json({ error: "Request Not found" });
 })
 
-app.listen(3000, function () {
-    console.log("App started on port 3000");
+app.listen(PORT, function () {
+    console.log("App started on port " + PORT);
 });
 
